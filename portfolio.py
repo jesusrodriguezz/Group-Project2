@@ -1,6 +1,6 @@
 # FILE:         portfolio.py
 # AUTHOR:       Dimitri Avila      davila@g.hmc.edu
-# DATE:         July 9th, 2023     last updated: July 12th, 2023
+# DATE:         July 9th, 2023     last updated: July 13th, 2023
 # DESCRIPTION:  The program below uses the Yahoo! Finance (yfinance) python package to access 
 #               live stock data in order to allow for the creation of an investment portfolio.
 #               We create a "holdings" table within the portfolio.db database to store all user
@@ -37,7 +37,7 @@ def setup_portfolio():
 
     # NOTE for above: the table "holdings" in the portfolio.db database will communicate with the "user" table Jesus is working on. This is done 
     #       using a foreign key and a reference to the "users" table. See below for more information...
-    # FOREIGN KEY (user_id): Specifies that the user_id column in the "holdings" table will be a foreign key. 
+    # FOREIGN KEY (user_id): Specifies that the user_id column in the "holdings" table will be a foreign key.
     #                        It references the id column of another table.
     # REFERENCES users(id): Indicates that the foreign key column, user_id, from the "holdings" table references 
     #                       the id column in the "users" table. So the "users" table Jesus makes should have an "id" column for us to
@@ -157,14 +157,17 @@ def get_portfolio_value_history(userID):
         # print(len(portfolio_value_per_minute))
         # for value in range(len(timestamps)):
         print(f'length of timestamps = {len(timestamps)}')
-        print(f'portfolio val per minute past 24hrs = {len(portfolioValue_everyMinute_past24hrs)}')
-        if len(timestamps) == len(portfolioValue_everyMinute_past24hrs):
-            for value in range(len(timestamps)):
+        print(f'length of portfolio value entries = {len(portfolioValue_everyMinute_past24hrs)}')
+        if len(timestamps) - 1 == len(portfolioValue_everyMinute_past24hrs):
+            for value in range(len(timestamps) - 1):
                 portfolioValue_everyMinute_past24hrs[value] += (portfolio_value_per_minute[value])
         else:
             portfolioValue_everyMinute_past24hrs.extend(portfolio_value_per_minute)
+    portfolioValue_everyMinute_past24hrs.extend([portfolio_value_per_minute[-1]])
     print(f'timestamps is equal to {timestamps} and it has a length of {len(timestamps)}')
+    # print(f'timestamps has a length of {len(timestamps)}')
     print(f'portfolioValue_everyMinute_past24hrs is equal to {portfolioValue_everyMinute_past24hrs} and it has a length of {len(portfolioValue_everyMinute_past24hrs)}')
+    #print(f'portfolioValue_everyMinute_past24hrs has a length of {len(portfolioValue_everyMinute_past24hrs)}')
     return timestamps, portfolioValue_everyMinute_past24hrs
 
 
@@ -183,13 +186,16 @@ def graph_portfolio_value_history(userID):
         line.set_data(x_axis_values, portfolio_values)
         ax.relim()
         ax.autoscale_view()
-        ax.set_title(f'Investment Portfolio Performance\nCurrent Value: {calculate_portfolio_value(userID)}')
+        ax.set_title(f'Investment Portfolio Performance\nCurrent Value: ${calculate_portfolio_value(userID)}')
         ax.set_xlabel('Time (EST)')
-        ax.set_ylabel('Portfolio Value')
+        ax.set_ylabel('Portfolio Value ($ USD)')
         ax.tick_params(axis='x', rotation=45)
 
         # Adjust x-axis limits
         ax.set_xlim(x_axis_values[0], x_axis_values[-1] + timedelta(hours=4))
+
+        # Export the graph as a static image file:
+        plt.savefig('/Users/dimitriavila/Desktop/Project2/Group-Project2/graph.png')
 
         return line,
 
@@ -207,7 +213,7 @@ def graph_portfolio_value_history(userID):
 
 
 
-# graph_portfolio_value_history(999)
+graph_portfolio_value_history(999)
 # get_portfolio_value_history(999)
 # print(get_stock_value('AAPL'))
 # print(get_stock_value('AMD'))
