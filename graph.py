@@ -154,29 +154,17 @@ def calculate_portfolio_value(userID):
         stockValue = get_stock_value(stock) * quantity
         portfolioValue += stockValue
     return portfolioValue
-        
-
-def graph_portfolio_value_history(userID):
-    # TODO: using calculate_portfolio_value, graph realtime portfolio value (1-day history maybe?)
-    return
-
-
-
-
-
-
-
-
-
 
 
 # Code to get most updated stock value
 def get_stock_value(stockName):
+    """Get most recent value for specified stock"""
     stockName = stockName
     stockData = yf.Ticker(stockName)
     todayData = stockData.history(period='1d', prepost = True)
     # print(todayData['Close'][0]) # prints out current stock value
     return todayData['Close'][0]
+
 
 def view_holdings_table():
     """View the contents of the holdings table (holdings content of every user)"""
@@ -248,7 +236,7 @@ def update_graph(stockName):
 
 
 # Define the ticker symbol
-ticker_symbol = 'AAPL' 
+ticker_symbol = 'AAPL'
 
 # Create empty lists to store data
 timestamps = []
@@ -275,27 +263,107 @@ update_interval = 1000  # 1 second
 ani = animation.FuncAnimation(fig, update_graph(ticker_symbol), interval=update_interval, cache_frame_data=False)
 
 # Display the graph
-plt.show()
+# plt.show()
+
+def update_portfolio_graph(userID):
+    # Retrieve the latest portfolio value
+    portfolio_value = calculate_portfolio_value(userID)
+
+    # Append the portfolio value to the list
+    portfolioValue_everyMinute_past24hrs = get_portfolio_value_history(userID)
+    portfolioValue_everyMinute_past24hrs.append(portfolio_value)
+
+    # Limit the number of data points to display on the graph
+    max_data_points = 1440  # Display data points for the last day
+    portfolio_values_display = portfolioValue_everyMinute_past24hrs[-max_data_points:]
+
+    # Plot the graph with updated data
+    ax.clear()
+    ax.plot(portfolio_values_display)
+    ax.set_xlabel('Time')
+    ax.set_ylabel('Portfolio Value')
+    ax.set_title('Real-Time Portfolio Value')
 
 
 def get_portfolio_value_history(userID):
-    """Grabs history of every single stock for the past 24 hours, and adds up stock value"""
+    """Grabs history of every single stock for the past 24 hours, and adds up all stock values"""
     portfolioValue_everyMinute_past24hrs = []
     stockList = combine_individual_stock_totals(userID)
 
     for stock, quantity in stockList:
         # Define the ticker symbol
         ticker_symbol = stock
-
-        # Create empty lists to store data
-        timestamps = []
-        prices = []
-
         # Retrieve historical stock price data for the last day
-        end = datetime.now()
-        start = end - timedelta(days=1)
         ticker = yf.Ticker(ticker_symbol)
-        historical_data = ticker.history(start=start, end=end, interval='1m')
+        historical_data = ticker.history(period='1d', interval='1m')
         timestamps = historical_data.index.tolist()
         prices = historical_data['Close'].tolist()
+        portfolio_value_per_minute = [quantity * price for price in prices]
+        portfolioValue_everyMinute_past24hrs.extend(portfolio_value_per_minute)
+    print(timestamps)
+    print(portfolioValue_everyMinute_past24hrs)
+    return timestamps, portfolioValue_everyMinute_past24hrs
+
+#get_portfolio_value_history(999)
+
+
+def graph_portfolio_value_history(userID):
+    # TODO: using calculate_portfolio_value, graph realtime portfolio value (1-day history maybe?)
+    timestamps, portfolio_values = get_portfolio_value_history(userID)
+    fig, ax = plt.subplots()
+    ax.plot(timestamps, portfolio_values)
+    ax.set_xlabel('Time (EST)')
+    ax.set_ylabel('Portfolio Value')
+    ax.set_title('Portfolio Value over Time')
+    ax.tick_params(axis='x', rotation=45)
+    plt.show()
+
+
+
+
+graph_individual_stock_info('test')
+
+
+# # Run the script continuously
+# while True:
+#     # Add AMD stock to the holdings table
+#     update_holdings(999, 'AMD', 1, 114.58)
+
+#     graph_portfolio_value_history(999)
+
+#     # Wait for a specific interval before adding the next entry
+#     time.sleep(60)  # Wait for 60 seconds
+
+
+
+
+# # timestamps, portfolio_values = get_portfolio_value_history(userID)
+
+# timestamps, portfolio_values = get_portfolio_value_history(999)
+
+# fig, ax = plt.subplots()
+# ax.plot(timestamps, portfolio_values)
+# ax.set_xlabel('Time (EST)')
+# ax.set_ylabel('Portfolio Value')
+# ax.set_title('Portfolio Value over Time')
+# ax.tick_params(axis='x', rotation=45)
+
+
+
+
+# def graph_portfolio_value_realtime(userID):
+#     portfolioValue_everyMinute_past24hrs = []
+#     stockList = combine_individual_stock_totals(userID)
+
+#     # Set up the figure and axis for the graph
+#     fig, ax = plt.subplots()
+
+#     # Set the animation update interval (in milliseconds)
+#     update_interval = 1000  # 1 second
+
+#     # Create the animation
+#     ani = animation.FuncAnimation(fig, update_graph, interval=update_interval)
+
+#     # Display the graph
+#     plt.show()
 
