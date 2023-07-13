@@ -206,7 +206,14 @@ def graph_portfolio_value_history(userID):
     plt.show()
 
 
-graph_portfolio_value_history(999)
-get_portfolio_value_history(999)
-print(get_stock_value('AAPL'))
-print(get_stock_value('AMD'))
+
+# graph_portfolio_value_history(999)
+# get_portfolio_value_history(999)
+# print(get_stock_value('AAPL'))
+# print(get_stock_value('AMD'))
+
+# update_holdings(999, 'AAPL', 10, get_stock_value('AAPL'))
+
+# print(get_user_holdings(999))
+# print(combine_individual_stock_totals(999))
+# print(calculate_portfolio_value(999))
