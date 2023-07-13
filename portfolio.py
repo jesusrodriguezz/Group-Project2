@@ -139,7 +139,7 @@ def calculate_portfolio_value(userID):
 def get_portfolio_value_history(userID):
     """Grabs history of every single stock for the past 24 hours, and adds up all stock values"""
     #Initialize list with 388 "0" elements since we are epecting 388 total values from (9:30am to 4:00pm) (not inclusive) if we sample every minute 
-    portfolioValue_everyMinute_past24hrs = [0] * 388
+    portfolioValue_everyMinute_past24hrs = []
     stockList = combine_individual_stock_totals(userID)
 
     for stock, quantity in stockList:
@@ -148,18 +148,28 @@ def get_portfolio_value_history(userID):
         # Retrieve historical stock price data for the last day
         ticker = yf.Ticker(ticker_symbol)
         historical_data = ticker.history(period='1d', interval='1m')
+     
         timestamps = historical_data.index.tolist()
         prices = historical_data['Close'].tolist()
         # portfolio_value_per_minute = [quantity * price for price in prices]
         portfolio_value_per_minute = [quantity * price for price in prices]
-        print(f'last stock value: {portfolio_value_per_minute[-1]}')
-        print(len(portfolio_value_per_minute))
-        for value in range(len(portfolio_value_per_minute)):
-             portfolioValue_everyMinute_past24hrs[value] += portfolio_value_per_minute[value]
+        # print(f'last stock value: {portfolio_value_per_minute[-1]}')
+        # print(len(portfolio_value_per_minute))
+        # for value in range(len(timestamps)):
+        print(f'length of timestamps = {len(timestamps)}')
+        print(f'portfolio val per minute past 24hrs = {len(portfolioValue_everyMinute_past24hrs)}')
+        if len(timestamps) == len(portfolioValue_everyMinute_past24hrs):
+            for value in range(len(timestamps)):
+                portfolioValue_everyMinute_past24hrs[value] += (portfolio_value_per_minute[value])
+        else:
+            portfolioValue_everyMinute_past24hrs.extend(portfolio_value_per_minute)
+    print(f'timestamps is equal to {timestamps} and it has a length of {len(timestamps)}')
+    print(f'portfolioValue_everyMinute_past24hrs is equal to {portfolioValue_everyMinute_past24hrs} and it has a length of {len(portfolioValue_everyMinute_past24hrs)}')
     return timestamps, portfolioValue_everyMinute_past24hrs
 
 
 def graph_portfolio_value_history(userID):
+    """This function graphs the portfolio value live. Working! 7/13/2023 @ 8:57PST"""
     fig, ax = plt.subplots()
     line, = ax.plot([], [])
     timestamps, portfolio_values = get_portfolio_value_history(userID)
@@ -173,6 +183,14 @@ def graph_portfolio_value_history(userID):
         line.set_data(x_axis_values, portfolio_values)
         ax.relim()
         ax.autoscale_view()
+        ax.set_title(f'Investment Portfolio Performance\nCurrent Value: {calculate_portfolio_value(userID)}')
+        ax.set_xlabel('Time (EST)')
+        ax.set_ylabel('Portfolio Value')
+        ax.tick_params(axis='x', rotation=45)
+
+        # Adjust x-axis limits
+        ax.set_xlim(x_axis_values[0], x_axis_values[-1] + timedelta(hours=4))
+
         return line,
 
     ani = animation.FuncAnimation(fig, update_graph, interval=1000)  # Update every second
@@ -181,48 +199,14 @@ def graph_portfolio_value_history(userID):
     ax.xaxis.set_major_locator(mdates.AutoDateLocator())
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M:%S'))
 
-    plt.xlabel('Time (EST)')
-    plt.ylabel('Portfolio Value')
-    plt.title(f'Investment Portfolio Performance\nCurrent Value: {portfolio_values[-1]}')
-    plt.xticks(rotation=45)
-    plt.tight_layout()
+    # plt.xlabel('Time (EST)')
+    # plt.ylabel('Portfolio Value')
+    # plt.xticks(rotation=45)
+    # plt.tight_layout()
     plt.show()
 
 
 graph_portfolio_value_history(999)
-
-
-
-
-# # TODO: work on a graphing function that works live!
-# def graph_portfolio_value_history(userID):
-#     # TODO: using calculate_portfolio_value, graph realtime portfolio value (1-day history maybe?)
-#     timestamps, portfolio_values = get_portfolio_value_history(userID)
-#     fig, ax = plt.subplots()
-#     ax.plot(timestamps, portfolio_values)
-#     ax.set_xlabel('Time (EST)')
-#     ax.set_ylabel('Portfolio Value')
-#     ax.set_title('Portfolio Value over Time')
-#     ax.tick_params(axis='x', rotation=45)
-#     plt.show()
-
-
-# def graph_portfolio_value_history(userID):
-#     timestamps, portfolio_values = get_portfolio_value_history(userID)
-
-#     # Convert timestamps to datetime objects
-#     x_axis_values = [pd.to_datetime(ts) - timedelta(hours=4) for ts in timestamps]
-
-#     fig, ax = plt.subplots()
-#     ax.plot_date(x_axis_values, portfolio_values, linestyle="-", marker=None)
-
-#     # Configure x-axis formatting
-#     ax.xaxis.set_major_locator(mdates.AutoDateLocator())
-#     ax.xaxis.set_major_formatter(mdates.DateFormatter('%H:%M:%S'))
-
-#     plt.xlabel('Time (EST)')
-#     plt.ylabel('Portfolio Value')
-#     plt.title(f'Portfolio Value Past 24 Hours\nCurrent Value: {portfolio_values[-1]}')
-#     plt.xticks(rotation=45)
-#     plt.tight_layout()
-#     plt.show()
+get_portfolio_value_history(999)
+print(get_stock_value('AAPL'))
+print(get_stock_value('AMD'))
