@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <title>Registration Page</title>
+    <style>
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #337ab7;
+            color: #fff;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1><span>Invest-Inforum</span><br>Registration Page</h1>
+        <form method="POST" action="{{ url_for('register') }}">
+            <br><br>
+            <input type="text" name="username" placeholder="Username">
+            <br>
+            <input type="password" name="password" placeholder="Password">
+            <br>
+            <input type="submit" name="submit" class="btn" value="Register">
+        </form>
+        <p>Already have an account? <a href="https://salamicadet-privatepelican-4000.codio.io/proxy/5000/login">Login here</a></p>
+        {% if error %}
+        <p class="error"><strong>Error:</strong> {{ error }}</p>
+        {% endif %}
+    </div>
+</body>
+
+</html>
