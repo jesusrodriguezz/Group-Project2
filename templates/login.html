@@ -1,0 +1,77 @@
+<html>
+  <head>
+    <title>Login Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/style.css">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Signika+Negative:wght@500&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-l9cO0uMaV2B+y9unDmlO+Y/8SN6QCaY4qQVjCi9lkVq+YdOJTD8TwxF3p6rBqTsH" crossorigin="anonymous" media="screen">
+    <style>
+      .container {
+        max-width: 400px;
+        height: 500px;
+        margin: auto;
+        margin-top: 200px;
+        padding: 20px;
+        background-color: #e2e3e3;
+        border-color: #c6c3c3;
+        border: 1px solid #b7b9ba;
+        border-radius: 5px;
+        align-items: center;
+      }
+      /* body{
+        background-color: #fafafa;
+      } */
+      h1 {
+        text-align: center;
+      }
+
+      form {
+        margin-top: 50px;
+        margin-bottom: 30px;
+        border-color: #a32e2e;
+      }
+
+      input[type="text"],
+      input[type="password"] {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+
+      .btn {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        background-color: #1d77c6;
+        color: #fff;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 4px;
+      }
+
+      .error {
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 style="color: #000000;">Please login</h1>
+      <br>
+    <div class="login">
+      <form action="" method="post">
+        <input type="text" placeholder="Username" name="username" value="{{ request.form.username }}">
+        <input type="password" placeholder="Password" name="password" value="{{ request.form.password }}">
+        <input class="btn btn-default" type="submit" value="Login">
+      </form>
+      </div>
+      {% if error %}
+        <p class="error"><strong>Error:</strong> {{ error }}</p>
+      {% endif %}
+    </div>
+  </body>
+</html>

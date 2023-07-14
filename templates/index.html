@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<!-- Boxicons -->
+	<link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+	<!-- My CSS -->
+	<link rel="stylesheet" href="static/style.css">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Aleo&family=Noto+Serif+KR:wght@200&display=swap" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+	integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+
+	<title>InvestInforum</title>
+	<script>
+        async function callback() {
+            let Stock = document.getElementById('stock').value;
+            let Period = document.getElementById('period').value;
+            let Interval = document.getElementById('interval').value;
+            //alert(Stock+Period+Interval);
+            //return;
+            let response = await fetch("/callback/getStock?data=" + Stock + "&period=" + Period + "&interval=" + Interval);
+            if (response.ok) {
+                let chartJson = await response.json();
+                if (response.ok) {
+                    //response = await fetch("/callback/getInfo?data=" + Stock);
+                    //let infoJson = await response.json();
+                    //info(infoJson);
+                    Plotly.newPlot('chart', chartJson, {});
+                } else {
+                    alert("HTTP-Error: " + response.status + "on getInfo");
+                }
+            } else {
+                alert("HTTP-Error: " + response.status + "on getStock");
+            }
+        }
+        function info(json) {
+            let name = document.getElementById('companyName');
+            name.innerHTML = json.shortName;
+            name = document.getElementById('symbol');
+            name.innerHTML = json.symbol;
+            name = document.getElementById('dayHigh');
+            name.innerHTML = json.dayHigh;
+            name = document.getElementById('dayLow');
+            name.innerHTML = json.dayLow;
+        }
+    </script>
+</head>
+<body>
+
+
+	<!-- SIDEBAR -->
+	<section id="sidebar">
+		<a href="#" class="brand">
+			<img src="/static/img/icons8-area-chart-48.png" alt="Icon">
+			<span class="text" style="font-family: 'Aleo', serif; margin-top: 19px; font-size: 29px;">Invest-Inforum</span>
+		</a>
+		<ul class="side-menu top">
+			<li class="active">
+				<a href="{{ url_for('index') }}">
+					<i class='bx bxs-dashboard' ></i>
+					<span class="text">Dashboard</span>
+				</a>
+			</li>
+			<li>
+				<a href="{{ url_for('forum') }}">
+					<i class='bx bxs-message-dots' ></i>
+					<span class="text">Forum</span>
+				</a>
+			</li>
+			<li>
+				<!-- <a href="#">
+					<i class='bx bxs-group' ></i>
+					<span class="text">Team</span>
+				</a>
+			</li> -->
+		</ul>
+		<ul class="side-menu">
+			<li>
+				<!-- <a href="#">
+					<i class='bx bxs-cog' ></i>
+					<span class="text">Settings</span>
+				</a> -->
+			</li>
+			<li>
+				<a href="{{ url_for('logout') }}" class="logout">
+					<i class='bx bxs-log-out-circle' ></i>
+					<span class="text">Logout</span>
+				</a>
+			</li>
+		</ul>
+	</section>
+	<!-- SIDEBAR -->
+
+
+
+	<!-- CONTENT -->
+	<section id="content">
+		<!-- NAVBAR -->
+		<nav>
+			<i class='bx bx-menu' ></i>
+			<form action="#">
+				<div class="form-input">
+				</div>
+			</form> 
+			<a href="#" class="notification">
+				<i class='bx bxs-bell' ></i>
+				<span class="num">8</span>
+			</a>
+			<a href="#" class="profile">
+				<img src="/static/img/admin.png">
+			</a>
+		</nav>
+		<!-- NAVBAR -->
+
+		<!-- MAIN -->
+		<main>
+			<div class="head-title">
+				<div class="left">
+					<h1>Portfolio Dashboard</h1>
+					<ul class="breadcrumb">
+						<li>
+							<a href="#">Dashboard</a>
+						</li>
+						<li><i class='bx bx-chevron-right' ></i></li>
+						<li>
+							<a class="active" href="#">Home</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+
+			<ul class="box-info">
+				<li>
+					<img src="/static/img/icons8-invest-48.png" alt="Icon">
+					<span class="text">
+						<h5>$3856.00</h5>
+						<p>Balance</p>
+					</span>
+				</li>
+				<li>
+					<img src="/static/img/icons8-invest-gain.png" alt="Icon">
+					<span class="text">
+						<h5>$439.00</h5>
+						<p>Gain</p>
+					</span>
+				</li>
+				<li>
+					<img src="/static/img/icons8-financial-crisis-48.png" alt="Icon">
+					<span class="text">
+						<h5>$120.00</h5>
+						<p>Loss</p>
+					</span>
+				</li>
+			</ul>
+
+
+			<div class="table-data">
+				<div class="order">
+					<div class="head">
+						<div class="row">
+							<div class="col"><b>Select stock</b></div>
+							<div class="col">
+								<select id="stock" class="form-select" aria-label="Select" )>
+									<option selected value="MSFT">Microsoft</option>
+									<option value="META">Facebook</option>
+									<option value="AAPL">Apple</option>
+									<option value="GOOGL">Google</option>
+									<option value="AMZN">Amazon</option>
+									<option value="V">Visa</option>
+									<option value="MA">Mastercard</option>
+									<option value="TSLA">Tesla</option>
+
+								</select>
+							</div>
+							<div class="col"><b>for period</b></div>
+				
+							<div class="col">
+								<select id="period" class="form-select" aria-label="Select" )>
+									<option selected value="1d">1 day</option>
+									<option value="5d">5 days</option>
+									<option value="1mo">1 month</option>
+									<option value="3mo">3 months</option>
+									<option value="6mo">6 months</option>
+									<option value="1y">1 year</option>
+									<option value="2y">2 years</option>
+									<option value="5y">5 years</option>
+									<option value="10y">10 years</option>
+									<option value="ytd">Year to date</option>
+									<option value="max">Max</option>
+								</select>
+							</div>
+							<div class="col"><b>Interval</b></div>
+				
+							<div class="col">
+								<select id="interval" class="form-select" aria-label="Select" )>
+									<option selected value="1m">1 minute</option>
+									<option value="2m">2 minutes</option>
+									<option value="5m">5 minutes</option>
+									<option value="15m">15 minutes</option>
+									<option value="30m">30 minutes</option>
+									<option value="60m">60 minutes</option>
+									<option value="90m">90 minutes</option>
+									<option value="1d">1 day</option>
+									<option value="5d">5 days</option>
+									<option value="1w">1 week</option>
+									<option value="1m">1 month</option>
+									<option value="3m">3 months</option>
+				
+								</select>
+							</div>
+							<div class="col">
+								<button type="button" class="btn btn-primary" onclick="callback()">Fetch stock</button>
+							</div>
+							<div class="col-9">
+								<h2 id="companyName"></h2>
+								<div id="chart-container" class="chart-container">
+								<div id="chart" class="chart" style="height: 500px; margin: 40px;">
+									</div>
+								</div>
+							</div>      
+						</div>
+				
+					</div>
+				</div>
+		</main>
+		<!-- MAIN -->
+	</section>
+	<!-- CONTENT -->
+	
+	<script src="static/script.js"></script>
+	<script>callback();</script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+</body>
+</html>
